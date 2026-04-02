@@ -1,0 +1,34 @@
+{
+  "id_column": "Id",
+  "text_columns": [
+    "Summary",
+    "Text"
+  ],
+  "categorical_columns": [
+    "ProductId",
+    "UserId"
+  ],
+  "numeric_columns": [
+    "HelpfulnessNumerator",
+    "HelpfulnessDenominator",
+    "Time"
+  ],
+  "engineered_numeric_columns": [
+    "Summary__char_count",
+    "Summary__word_count",
+    "Summary__exclamation_count",
+    "Summary__question_count",
+    "Summary__uppercase_ratio",
+    "Summary__digit_ratio",
+    "Text__char_count",
+    "Text__word_count",
+    "Text__exclamation_count",
+    "Text__question_count",
+    "Text__uppercase_ratio",
+    "Text__digit_ratio",
+    "merged_text__char_count",
+    "merged_text__word_count"
+  ],
+  "train_score_min": 1,
+  "train_score_max": 5
+}
