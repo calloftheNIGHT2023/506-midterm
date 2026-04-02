@@ -1,0 +1,25 @@
+{
+  "model": "Ridge",
+  "alpha": 3.0,
+  "cv_folds": 2,
+  "max_train_rows": 20000,
+  "cv_rmse_mean": 0.8888098472370214,
+  "cv_rmse_std": 0.0043419091336094895,
+  "holdout_rmse_raw": 0.8696345140114861,
+  "holdout_rmse_rounded": 0.9132360045464699,
+  "train_rows_total": 139753,
+  "train_rows_labeled": 20000,
+  "text_columns": [
+    "Summary",
+    "Text"
+  ],
+  "categorical_columns": [
+    "ProductId",
+    "UserId"
+  ],
+  "numeric_columns": [
+    "HelpfulnessNumerator",
+    "HelpfulnessDenominator",
+    "Time"
+  ]
+}
