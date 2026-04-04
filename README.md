@@ -3,11 +3,11 @@
 
 Predict Amazon movie review star ratings for the Kaggle competition `cs-506-spring-2026-midterm`.
 
-This repository contains a reproducible non-neural, non-boosting baseline pipeline for the Amazon movie review rating prediction task. The current pipeline is designed to be easy to rerun, extend, and document for the course midterm requirements.
+This repository contains a reproducible non-neural, non-boosting pipeline for the Amazon movie review rating prediction task. The current pipeline is designed to be easy to rerun, extend, and document for the course midterm requirements.
 
 ## Repository description
 
-Baseline pipeline for CS506 midterm Kaggle competition on Amazon movie review star rating prediction using TF-IDF, categorical features, and ridge regression optimized for RMSE.
+Ridge-based pipeline for the CS506 midterm Kaggle competition on Amazon movie review star rating prediction using TF-IDF, categorical features, and engineered numeric metadata optimized for RMSE.
 
 ## Environment
 
@@ -101,14 +101,15 @@ outputs/         metrics and submission files
 
 ## Current approach
 
-Current baseline:
+Current model:
 - treat the task as ordered rating prediction and optimize against RMSE
 - train only on the rows in `train.csv` where `Score` is present
 - predict the rows in `train.csv` where `Score` is missing, using `test.csv` only to preserve Kaggle row order
 - combine all detected text columns into one review text field
 - build sparse text features with word-level TF-IDF using unigrams and bigrams
-- add simple engineered numeric features such as length, punctuation, uppercase ratio, and digit ratio
-- fit a `Ridge` regressor and round predictions back to valid star ratings for submission
+- add text-derived numeric features such as length, punctuation, uppercase ratio, and digit ratio
+- add metadata-derived numeric features from review time and helpfulness counts
+- fit a `Ridge` regressor with `alpha=9.0` and round predictions back to valid star ratings for submission
 
 Why this is allowed:
 - no deep learning
@@ -122,10 +123,11 @@ This dataset has three distinct signal sources:
 - high-cardinality review context fields such as `ProductId` and `UserId`
 - metadata such as helpfulness counts and review time
 
-The baseline separates those feature types instead of forcing everything into one representation:
+The current pipeline separates those feature types instead of forcing everything into one representation:
 - `TF-IDF` captures lexical patterns and short phrases in `Summary` and `Text`
 - one-hot encoding captures recurring user and product effects
 - numeric and hand-built text statistics provide additional low-dimensional signals
+- time-derived and helpfulness-derived features capture review context that plain text misses
 
 `Ridge` regression was chosen as the first strong baseline because it is:
 - fast enough for repeated experiments on sparse features
@@ -139,9 +141,15 @@ The baseline separates those feature types instead of forcing everything into on
 - the training script reports both cross-validation RMSE and a holdout RMSE
 - a smaller subset mode is included for fast iteration before running larger experiments
 
-Current quick-run result on a `20,000` row labeled subset:
-- `2-fold CV RMSE`: about `0.8888`
-- holdout RMSE on raw regression output: about `0.8696`
+Current full-data result with the default configuration:
+- `5-fold CV RMSE`: about `0.7780`
+- holdout RMSE on raw regression output: about `0.7786`
+
+Recent improvements over the original baseline:
+- added `Time_year`, `Time_month`, and `Time_dayofweek` features derived from the Unix review timestamp
+- added `HelpfulnessRatio`, `HelpfulnessLogDen`, and `HelpfulnessLogNum` to capture helpfulness scale and saturation effects
+- refactored feature creation to use `DataFrame.assign(...)`, which avoids the pandas chained-assignment warning in newer pandas versions
+- tuned the default `Ridge` regularization strength from `alpha=3.0` to `alpha=9.0`
 
 ## Process notes
 
@@ -155,8 +163,7 @@ The repository is being built to satisfy the assignment requirements:
 ## Next steps
 
 After the Kaggle data is available locally, the next work items are:
-- compare larger full-data runs against the subset baseline
-- add better helpfuness-derived and time-derived features
+- compare larger full-data runs against the current tuned ridge baseline
 - test leakage-safe user and product aggregate statistics
 - compare several non-boosting models
 - tune hyperparameters with cross-validation

@@ -27,7 +27,13 @@
     "Text__uppercase_ratio",
     "Text__digit_ratio",
     "merged_text__char_count",
-    "merged_text__word_count"
+    "merged_text__word_count",
+    "Time_year",
+    "Time_month",
+    "Time_dayofweek",
+    "HelpfulnessRatio",
+    "HelpfulnessLogDen",
+    "HelpfulnessLogNum"
   ],
   "train_score_min": 1,
   "train_score_max": 5

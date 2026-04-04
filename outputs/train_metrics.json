@@ -1,14 +1,14 @@
 {
   "model": "Ridge",
-  "alpha": 3.0,
-  "cv_folds": 2,
-  "max_train_rows": 20000,
-  "cv_rmse_mean": 0.8888098472370214,
-  "cv_rmse_std": 0.0043419091336094895,
-  "holdout_rmse_raw": 0.8696345140114861,
-  "holdout_rmse_rounded": 0.9132360045464699,
+  "alpha": 9.0,
+  "cv_folds": 5,
+  "max_train_rows": null,
+  "cv_rmse_mean": 0.777965618008896,
+  "cv_rmse_std": 0.0026914448807243735,
+  "holdout_rmse_raw": 0.7785599628420059,
+  "holdout_rmse_rounded": 0.8261363038617994,
   "train_rows_total": 139753,
-  "train_rows_labeled": 20000,
+  "train_rows_labeled": 125777,
   "text_columns": [
     "Summary",
     "Text"

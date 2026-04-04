@@ -76,6 +76,16 @@ def infer_schema(df: pd.DataFrame) -> Schema:
         )
 
     engineered_numeric_columns.extend(["merged_text__char_count", "merged_text__word_count"])
+    engineered_numeric_columns.extend(
+        [
+            "Time_year",
+            "Time_month",
+            "Time_dayofweek",
+            "HelpfulnessRatio",
+            "HelpfulnessLogDen",
+            "HelpfulnessLogNum",
+        ]
+    )
     return Schema(
         id_column=id_column,
         text_columns=text_columns,
@@ -112,20 +122,40 @@ def add_features(df: pd.DataFrame, schema: Schema) -> pd.DataFrame:
     else:
         merged = pd.Series("", index=enriched.index, dtype="object")
 
-    enriched["merged_text"] = merged
-    enriched["merged_text__char_count"] = merged.str.len()
-    enriched["merged_text__word_count"] = merged.str.split().str.len().fillna(0)
+    feature_updates: dict[str, pd.Series] = {
+        "merged_text": merged,
+        "merged_text__char_count": merged.str.len(),
+        "merged_text__word_count": merged.str.split().str.len().fillna(0),
+    }
+
+    if "Time" in enriched.columns:
+        timestamps = pd.to_datetime(enriched["Time"], unit="s", errors="coerce")
+        feature_updates["Time_year"] = timestamps.dt.year.fillna(0)
+        feature_updates["Time_month"] = timestamps.dt.month.fillna(0)
+        feature_updates["Time_dayofweek"] = timestamps.dt.dayofweek.fillna(0)
+
+    if {
+        "HelpfulnessNumerator",
+        "HelpfulnessDenominator",
+    }.issubset(enriched.columns):
+        denominator = enriched["HelpfulnessDenominator"].clip(lower=0)
+        numerator = enriched["HelpfulnessNumerator"].clip(lower=0)
+        feature_updates["HelpfulnessRatio"] = (
+            numerator / denominator.replace(0, np.nan)
+        ).fillna(0.0)
+        feature_updates["HelpfulnessLogDen"] = np.log1p(denominator)
+        feature_updates["HelpfulnessLogNum"] = np.log1p(numerator)
 
     for column in schema.text_columns:
         values = enriched[column].fillna("").astype(str)
-        enriched[f"{column}__char_count"] = values.str.len()
-        enriched[f"{column}__word_count"] = values.str.split().str.len().fillna(0)
-        enriched[f"{column}__exclamation_count"] = values.str.count("!")
-        enriched[f"{column}__question_count"] = values.str.count(r"\?")
-        enriched[f"{column}__uppercase_ratio"] = _uppercase_ratio(values)
-        enriched[f"{column}__digit_ratio"] = _digit_ratio(values)
+        feature_updates[f"{column}__char_count"] = values.str.len()
+        feature_updates[f"{column}__word_count"] = values.str.split().str.len().fillna(0)
+        feature_updates[f"{column}__exclamation_count"] = values.str.count("!")
+        feature_updates[f"{column}__question_count"] = values.str.count(r"\?")
+        feature_updates[f"{column}__uppercase_ratio"] = _uppercase_ratio(values)
+        feature_updates[f"{column}__digit_ratio"] = _digit_ratio(values)
 
-    return enriched
+    return enriched.assign(**feature_updates)
 
 
 def build_preprocessor(schema: Schema) -> ColumnTransformer:

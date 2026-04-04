@@ -27,7 +27,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--model-path", default="models/ridge_tfidf.pkl")
     parser.add_argument("--metadata-path", default="models/ridge_tfidf_metadata.json")
     parser.add_argument("--metrics-path", default="outputs/train_metrics.json")
-    parser.add_argument("--alpha", type=float, default=3.0)
+    parser.add_argument("--alpha", type=float, default=9.0)
     parser.add_argument("--cv-folds", type=int, default=5)
     parser.add_argument("--max-train-rows", type=int, default=None)
     parser.add_argument("--random-state", type=int, default=42)
