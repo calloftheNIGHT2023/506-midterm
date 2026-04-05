@@ -3,6 +3,15 @@
 
 Predict Amazon movie review star ratings for the Kaggle competition `cs-506-spring-2026-midterm`.
 
+## Repository migration note
+
+I initially created and worked in a personal repository by mistake, then synchronized the full project history and current codebase into the course repository.
+
+Previous repository link:
+- `https://github.com/calloftheNIGHT2023/506-midterm`
+
+This repository is the intended course submission repository and now contains the synchronized project history and current contents.
+
 This repository contains a reproducible non-neural, non-boosting pipeline for the Amazon movie review rating prediction task. The current pipeline is designed to be easy to rerun, extend, and document for the course midterm requirements.
 
 ## Repository description
