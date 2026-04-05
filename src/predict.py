@@ -16,6 +16,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--test-path", default="data/test.csv")
     parser.add_argument("--model-path", default="models/ridge_tfidf.pkl")
     parser.add_argument("--submission-path", default="outputs/submission.csv")
+    parser.add_argument(
+        "--round-predictions",
+        action="store_true",
+        help="Round predictions back to integer star ratings before writing submission.",
+    )
     return parser.parse_args()
 
 
@@ -42,16 +47,19 @@ def main() -> None:
         model = pickle.load(handle)
 
     raw_predictions = model.predict(featured_test)
-    rounded = np.clip(
-        np.rint(raw_predictions),
+    clipped = np.clip(
+        raw_predictions,
         int(labeled_df["Score"].min()),
         int(labeled_df["Score"].max()),
-    ).astype(int)
+    )
+    final_predictions = clipped
+    if args.round_predictions:
+        final_predictions = np.rint(clipped).astype(int)
 
     submission = pd.DataFrame(
         {
             schema.id_column: unlabeled_ordered[schema.id_column],
-            "Score": rounded,
+            "Score": final_predictions,
         }
     )
     Path(args.submission_path).parent.mkdir(parents=True, exist_ok=True)

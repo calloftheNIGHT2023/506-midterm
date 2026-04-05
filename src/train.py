@@ -84,9 +84,11 @@ def main() -> None:
 
     model.fit(X_train, y_train)
     valid_raw = model.predict(X_valid)
+    valid_clipped = valid_raw.clip(int(y_train.min()), int(y_train.max()))
     valid_rounded = rounded_clipped_predictions(valid_raw, y_train)
 
     holdout_rmse_raw = evaluate_rmse(y_valid, valid_raw)
+    holdout_rmse_clipped = evaluate_rmse(y_valid, valid_clipped)
     holdout_rmse_rounded = evaluate_rmse(y_valid, valid_rounded)
 
     model.fit(X, y)
@@ -107,6 +109,7 @@ def main() -> None:
         "cv_rmse_mean": float(cv_scores.mean()),
         "cv_rmse_std": float(cv_scores.std()),
         "holdout_rmse_raw": holdout_rmse_raw,
+        "holdout_rmse_clipped": holdout_rmse_clipped,
         "holdout_rmse_rounded": holdout_rmse_rounded,
         "train_rows_total": int(len(train_df)),
         "train_rows_labeled": int(len(labeled_df)),

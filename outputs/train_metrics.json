@@ -6,6 +6,7 @@
   "cv_rmse_mean": 0.777965618008896,
   "cv_rmse_std": 0.0026914448807243735,
   "holdout_rmse_raw": 0.7785599628420059,
+  "holdout_rmse_clipped": 0.7717896479933111,
   "holdout_rmse_rounded": 0.8261363038617994,
   "train_rows_total": 139753,
   "train_rows_labeled": 125777,
